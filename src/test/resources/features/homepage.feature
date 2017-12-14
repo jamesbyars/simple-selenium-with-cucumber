@@ -2,10 +2,10 @@ Feature: Homepage
 
   Background:
     Given I am using chrome
-    And I am on the page with url "https://stackoverflow.com/"
+    And I am on the page with url "https://searchwww.sec.gov/EDGARFSClient/jsp/EDGAR_MainAccess.jsp"
 
-  Scenario: Homepage navigation bar has Tag tab
-    When I get the element with id "nav-tags"
+  Scenario: I can search for James Byars
+    When I search for the text "Byars, James"
     Then I should see the text "Tags"
 
   Scenario: Homepage navigation bar has Questions tab

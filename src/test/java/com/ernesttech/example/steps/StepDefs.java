@@ -82,6 +82,7 @@ public class StepDefs {
 
     @Given("^I am not logged in$")
     public void iAmNotLoggedIn() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
 
@@ -111,4 +112,14 @@ public class StepDefs {
     }
 
 
+    @When("^I search for the text \"([^\"]*)\"$")
+    public void iSearchForTheText(String searchText) throws Throwable {
+        WebElement searchElement = webDriver.findElement(By.id("search_text"));
+
+        if (null == searchElement) {
+            throw new RuntimeException("Could not find search element");
+        }
+
+        searchElement.sendKeys(searchText);
+    }
 }
