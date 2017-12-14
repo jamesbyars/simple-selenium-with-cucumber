@@ -11,18 +11,19 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 public class StepDefs {
 
-    private WebDriver webDriver;
-    private WebElement webElement;
+    private WebDriver webDriver = null;
+    private WebElement webElement = null;
 
     @Before
     public void setup() {
@@ -35,9 +36,8 @@ public class StepDefs {
         // Firefox
         System.setProperty("webdriver.gecko.driver", "geckodriver-osx");
 
-        webDriver = new ChromeDriver();
-
-        webElement = null;
+        // PhantomJS
+        System.setProperty("phantomjs.binary.path", "phantomjs-osx");
     }
 
     @After
@@ -47,11 +47,41 @@ public class StepDefs {
         if (null != webDriver) {
             webDriver.quit();
         }
+
+        webElement = null;
+        webDriver = null;
     }
+
+    @Given("^I am using chrome")
+    public void iAmUsingChrome() {
+        if (null != webDriver) {
+            throw new RuntimeException("Driver already configured");
+        }
+
+        webDriver = new ChromeDriver();
+    }
+
+    @Given("^I am using firefox")
+    public void iAmUsingFirefox() {
+        if (null != webDriver) {
+            throw new RuntimeException("Driver already configured");
+        }
+
+        webDriver = new FirefoxDriver();
+    }
+
+    @Given("^I am using phantom")
+    public void iAmUsingPhantom() {
+        if (null != webDriver) {
+            throw new RuntimeException("Driver already configured");
+        }
+
+        webDriver = new PhantomJSDriver();
+    }
+
 
     @Given("^I am not logged in$")
     public void iAmNotLoggedIn() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
 
@@ -60,17 +90,16 @@ public class StepDefs {
         webDriver.navigate().to(url);
     }
 
-    @When("^I get the \"([^\"]*)\" of the element with \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iGetTheOfTheElementWith(String elementAttribue, String htmlAttribute, String identifier) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        webElement = findElementBy(By.id(identifier), 20, 1);
+    @When("^I get the element with id \"([^\"]*)\"$")
+    public void iGetTheElementWithId(String elementId) throws Throwable {
+        webElement = findElementBy(By.id(elementId), 1, 1);
     }
 
-    @Then("^I should see the \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iShouldSeeThe(String arg1, String value) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
+    @Then("^I should see the text \"([^\"]*)\"$")
+    public void iShouldSeeTheText(String value) throws Throwable {
         assertThat(webElement.getText(), is(value));
     }
+
 
     private WebElement findElementBy(By by, int timeout, int pollingFrequency) {
         Wait<WebDriver> wait = new FluentWait<>(webDriver)
@@ -80,5 +109,6 @@ public class StepDefs {
 
         return wait.until(driver -> driver.findElement(by));
     }
+
 
 }
