@@ -3,6 +3,7 @@ package com.ernesttech.example.steps;
 import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -54,9 +55,9 @@ public class StepDefs {
 
     @Given("^I am using chrome")
     public void iAmUsingChrome() {
-        if (null != webDriver) {
-            throw new RuntimeException("Driver already configured");
-        }
+//        if (null != webDriver) {
+//            throw new RuntimeException("Driver already configured");
+//        }
 
         webDriver = new ChromeDriver();
     }
@@ -79,13 +80,6 @@ public class StepDefs {
         webDriver = new PhantomJSDriver();
     }
 
-
-    @Given("^I am not logged in$")
-    public void iAmNotLoggedIn() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
     @Given("^I am on the page with url \"([^\"]*)\"$")
     public void iAmOnThePageWithUrl(String url) throws Throwable {
         webDriver.navigate().to(url);
@@ -101,6 +95,28 @@ public class StepDefs {
         assertThat(webElement.getText(), is(value));
     }
 
+    @When("^I enter \"([^\"]*)\" in the search field with quotes$")
+    public void iEnterInTheSearchFieldWithQuotes(String searchText) throws Throwable {
+        WebElement searchElement = webDriver.findElement(By.id("search_text"));
+
+        if (null == searchElement) {
+            throw new RuntimeException("Could not find search element");
+        }
+
+        searchElement.sendKeys("\"" + searchText + "\"");
+    }
+
+    @And("^I submit the search form$")
+    public void iSubmitTheSearchForm() throws Throwable {
+        WebElement searchFormSubmitButton = webDriver.findElement(By.name("search"));
+
+        if (null == searchFormSubmitButton) {
+            throw new RuntimeException("Could not find search form submit button");
+        }
+
+        searchFormSubmitButton.click();
+    }
+
 
     private WebElement findElementBy(By by, int timeout, int pollingFrequency) {
         Wait<WebDriver> wait = new FluentWait<>(webDriver)
@@ -112,14 +128,26 @@ public class StepDefs {
     }
 
 
-    @When("^I search for the text \"([^\"]*)\"$")
-    public void iSearchForTheText(String searchText) throws Throwable {
+    @Then("^I should wait (\\d+) seconds$")
+    public void iShouldWaitSeconds(int seconds) throws Throwable {
+        Thread.sleep(seconds * 1000);
+    }
+
+    @When("^I get the element with xpath \"([^\"]*)\"$")
+    public void iGetTheElementWithXpath(String xpath) throws Throwable {
+        webElement = webDriver.findElement(By.xpath(xpath));
+        System.out.println(webElement.getText());
+    }
+
+    @When("^When I enter \"([^\"]*)\" in the search field with quotes$")
+    public void whenIEnterInTheSearchFieldWithQuotes(String searchText) throws Throwable {
         WebElement searchElement = webDriver.findElement(By.id("search_text"));
 
         if (null == searchElement) {
             throw new RuntimeException("Could not find search element");
         }
 
-        searchElement.sendKeys(searchText);
+        searchElement.sendKeys("\"" + searchText + "\"");
     }
+
 }
